@@ -1,15 +1,28 @@
 namespace ISINExtractor
 {
-    public class SearchIndexer
+    using System.IO;
+    using System.Text.Json;
+
+    public class SearchIndexer : ISearchIndexer
     {
-        public string IndexDocument(string json)
+        private string csvFileName = "output.csv";
+        
+        private class IsinIndexItem
         {
-
-            // code to parse json
-
-            // ouput CSV line of documentId, company name etc
-
-            return "";
+            public string Figi { get; set; }
+            public string Isin { get; set; }
+            public string CompanyName { get; set; }
+        }
+        public string IndexDocument(string documentJson)
+        {
+            var document = JsonSerializer.Deserialize<IsinIndexItem>(documentJson);
+            
+            using (StreamWriter sw = File.AppendText(this.csvFileName))
+            {
+                sw.WriteLine(document.Figi + "," + document.Isin + "," + document.CompanyName);
+            }
+            
+            return "OK";
         }
     }
 }
